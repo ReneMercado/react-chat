@@ -2,53 +2,39 @@ import React, { useState, useEffect } from "react";
 import MessageBox from "../messageBox/messageBox";
 import AxiosClient from "../../../axiosClient";
 import nicescroll from "nicescroll";
+import * as actions from "../../../redux/actions/index";
+import { connect } from "react-redux";
+import { withPolling } from "../../../hoc/withPolling";
+import { scrollToLastMessage } from "../../../utility";
 
 const Conversation = props => {
-  const [conversation, setConversation] = useState([]);
   const [message, setMessage] = useState("");
   const instance = AxiosClient();
 
-  const getMessages = () => {
-    instance
-      .get("/api/chats/conversation/" + props.user._id + "?-message")
-      .then(res => {
-        setConversation(res.data);
-        clearResizeScroll();
-      })
-      .catch(err => console.log(err));
-  };
-
   useEffect(() => {
     window.jQuery(".messages").niceScroll({
       cursorcolor: "#cdd2d6",
       cursorwidth: "4px",
       cursorborder: "none"
     });
+
   }, []);
 
-  const clearResizeScroll = () => {
-    window
-      .jQuery(".messages")
-      .getNiceScroll(0)
-      .resize();
-
-    window
-      .jQuery(".messages")
-      .getNiceScroll(0)
-      .doScrollTop(999999, 999);
-  };
-
   useEffect(() => {
-    getMessages();
+    props.onFetchConversation();
     console.log("Entro  a Use Effect");
-    console.log("[User]", props.user);
+    console.log("[User From Redux Store]", props.currentUserChat);
 
     window.jQuery(".messages").niceScroll({
       cursorcolor: "#cdd2d6",
       cursorwidth: "4px",
       cursorborder: "none"
     });
-  }, [props.user]);
+  }, [props.currentUserChat]);
+
+  useEffect(() => {
+    scrollToLastMessage();
+  }, [props.conversation.length]);
 
   const onChangeMessage = event => {
     setMessage(event.target.value);
@@ -57,13 +43,13 @@ const Conversation = props => {
   const onSendMessage = () => {
     instance
       .post("/api/chats/message", {
-        to: props.user._id,
+        to: props.currentUserChat._id,
         data: message
       })
       .then(res => {
         document.getElementById("texxt").value = "";
         setMessage("");
-        getMessages();
+        props.onFetchConversation();
       })
       .catch(err => console.log(err));
   };
@@ -79,13 +65,13 @@ const Conversation = props => {
           />
         </div>
         <div className="info">
-          <div className="name">{props.user.name}</div>
-          <div className="count">{props.user._id}</div>
+          <div className="name">{props.currentUserChat.name}</div>
+          <div className="count">{props.currentUserChat._id}</div>
         </div>
         <i className="fa fa-star" />
       </div>
-      <ul className="messages">
-        {conversation.map(conv => {
+      <ul id="messages-container" className="messages">
+        {props.conversation.map(conv => {
           return <MessageBox key={conv._id} message={conv} />;
         })}
       </ul>
@@ -98,8 +84,8 @@ const Conversation = props => {
           rows="2"
           onChange={onChangeMessage}
         />
-        <i className="fa fa-picture-o" />
-        <i className="fa fa-file-o" />
+        {/* <i className="fa fa-picture-o" />
+        <i className="fa fa-file-o" /> */}
         <span className="send" onClick={onSendMessage}>
           Send
         </span>
@@ -108,4 +94,22 @@ const Conversation = props => {
   );
 };
 
-export default Conversation;
+const mapStateToProps = state => {
+  return {
+    conversation: state.chat.messages,
+    currentUserChat: state.chat.currentUserChat
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onFetchConversation: () => dispatch(actions.getMessages())
+  };
+};
+
+export default withPolling(actions.getMessages)(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Conversation)
+);

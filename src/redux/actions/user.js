@@ -9,3 +9,9 @@ export const userLogout = () => {
     type: actionTypes.USER_LOGOUT
   };
 };
+export const userLogin = (userDisplayName) => {
+  return {
+    type: actionTypes.USER_LOGIN,
+    userDisplayName: userDisplayName
+  };
+};

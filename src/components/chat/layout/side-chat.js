@@ -1,15 +1,12 @@
 import React, { Component } from "react";
 import AxiosClient from "../../../axiosClient";
-import { connect } from 'react-redux';
+import { withPolling } from "../../../hoc/withPolling";
+import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import nicescroll from "nicescroll";
-import * as actions from '../../../redux/actions/index';
+import * as actions from "../../../redux/actions/index";
 
 class SideChat extends Component {
-  // state = {
-  //   users: []
-  // };
-
   instance = AxiosClient();
 
   componentDidMount() {
@@ -19,21 +16,16 @@ class SideChat extends Component {
       cursorborder: "none"
     });
 
-    // this.instance
-    //   .get("/api/users")
-    //   .then(res => {
-    //     console.log(res.data);
-    //     this.setState({ users: res.data });
-    //   })
-    //   .catch(err => console.log(err));
+    if (this.props.isLogged && sessionStorage.getItem("userId")) {
+      this.props.onFetchUsers();
+    }
   }
 
-  onSetUserOnline = () => {
+  onConnectUser = () => {
     this.instance
       .get("api/chats/connect")
       .then(res => {
         console.log(res);
-
         ////////////////////////////////////////// RESPONSE EXAMPLE //////////////////////////////////////////
         // created_at: "2019-07-05T23:12:51.490Z"
         // last_connect: "2019-07-06T08:06:40.841Z"
@@ -42,8 +34,7 @@ class SideChat extends Component {
         // user: "5d1fd3dd470c5c001728d400"
         // __v: 0
         // _id: "5d1fd9739fd8049a0199bce5"
-
-        localStorage.setItem("userId", res.data.user);
+        sessionStorage.setItem("userId", res.data.user);
         this.props.onFetchUsers();
       })
       .catch(err => console.log(err));
@@ -52,42 +43,95 @@ class SideChat extends Component {
   onLogout = () => {
     //We don't have a service to set user offline.
     this.props.onLogoutUser();
-    this.props.history.push('/');
+    this.props.onDisconnectUser();
+    this.props.history.push("/");
   };
+
+  onFilterUserList(event) {
+    event.preventDefault();
+    //HERE IS BETTER TO CALL ANOTHER SERVICE TO GET USERS BY SOME QUERY
+    // const filteredList = this.props.users.filter(user => {
+    //   user.name.include(event.target.value);
+    // });
+  }
 
   render() {
     return (
-      <div className="left-menu">
+      <div className="left-menu" onSubmit={this.onFilterUserList}>
         <form action="#" className="search">
           <input placeholder="search..." type="search" name="" id="" />
           <input type="submit" value="&#xf002;" />
         </form>
         <menu className="list-friends">
-          {this.props.users.map(user => {
-            return (
-              <li key={user._id} onClick={() => this.props.onChatClicked(user)}>
-                <img
-                  width="50"
-                  height="50"
-                  src="http://cs625730.vk.me/v625730358/1126a/qEjM1AnybRA.jpg"
-                />
-                <div className="info">
-                  <div className="user">{user.name}</div>
-                  <div
-                    className={
-                      user.status === "ONLINE" ? "status on" : "status off"
-                    }
-                  >
-                    {user.status}
+          <div className="list-friends" style={{ height: "auto" }}>
+            <span style={{ margin: "auto", color: "#a8adb3", display: "table" }}>
+              Online Users
+            </span>
+            {this.props.onlineUsers.map((obj, idx) => {
+              return (
+                <li
+                  key={obj.user._id}
+                  onClick={() => this.props.onSetCurrentUserChat(obj.user)}
+                >
+                  <img
+                    width="50"
+                    height="50"
+                    src={`https://loremflickr.com/320/240?random=${idx}`}
+                  />
+                  <div className="info">
+                    <div className="user">{obj.user.name}</div>
+                    <div
+                      className={
+                        // WE DON'T GET ALL USERS STATUSES, WE JUST HAVE "active" BUT PROBABLY IS FOR OTHER PURPOSES
+                        obj.status === "ONLINE" ? "status on" : "status off"
+                      }
+                    >
+                      {obj.status? obj.status.toLowerCase() : "no status"}
+                    </div>
                   </div>
-                </div>
-              </li>
-            );
-          })}
+                </li>
+              );
+            })}
+          </div>
+
+          <div style={{ display: "flex", flexFlow: "column" }}>
+            <span style={{ margin: "auto", color: "#a8adb3" }}> All Users</span>
+            <menu className="list-friends">
+              {this.props.users.map((user, idx) => {
+                return (
+                  <li
+                    key={user._id}
+                    onClick={() => this.props.onSetCurrentUserChat(user)}
+                  >
+                    <img
+                      width="50"
+                      height="50"
+                      src={`https://loremflickr.com/320/240?random=${idx}`}
+                    />
+                    <div className="info">
+                      <div className="user">{user.name}</div>
+                      <div
+                        className={
+                          // WE DON'T GET ALL USERS STATUSES, WE JUST HAVE "active" BUT PROBABLY IS FOR OTHER PURPOSES
+                          user.status === "ONLINE" ? "status on" : "status off"
+                        }
+                      >
+                      {user.status? user.status.toLowerCase() : "no status"}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </menu>
+          </div>
         </menu>
         <div className="button-container">
           <button onClick={this.onLogout}>Logout</button>
-          <button onClick={this.onSetUserOnline}>Connect</button>
+          {!sessionStorage.getItem("userId") ? (
+            <button onClick={this.onConnectUser}>Connect</button>
+          ) : (
+            <button onClick={this.props.onDisconnectUser}>Disconnect</button>
+          )}
         </div>
       </div>
     );
@@ -96,16 +140,29 @@ class SideChat extends Component {
 
 const mapStateToProps = state => {
   return {
-    users: state.chat.usersList
+    users: state.chat.usersList,
+    onlineUsers: state.chat.onlineUsers,
+    isLogged: state.user.isLogged
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     // onAddUser: user => dispatch({ type: actionTypes.ADD_USER, user: user }),
-    onFetchUsers: () => dispatch(actions.getUsersList()),
-    onLogoutUser: () => dispatch(actions.userLogout())
+    onFetchUserList: () => dispatch(actions.getUsersList()),
+    onFetchOnlineUsers: () => dispatch(actions.getOnlineUsersList()),
+    onFetchUsers: () => dispatch(actions.refreshUsersLists()),
+    onLogoutUser: () => dispatch(actions.userLogout()),
+    onSetCurrentUserChat: user => dispatch(actions.setCurrentUserChat(user)),
+    onDisconnectUser: () => dispatch(actions.userDisconnect())
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SideChat));
+export default withRouter(
+  withPolling(actions.refreshUsersLists)(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(SideChat)
+  )
+);

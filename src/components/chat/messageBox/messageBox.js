@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from 'react-redux';
 
 const messageBox = props => {
   const dateFormatter = date => {
@@ -13,12 +14,12 @@ const messageBox = props => {
   };
 
   let messageElement = null;
-  if (props.message.from === localStorage.getItem("userId")) {
+  if (props.message.from === sessionStorage.getItem("userId")) {
     messageElement = (
       <li className="i">
         <div className="head">
           <span className="time">{dateFormatter(props.message.date)}</span>
-          <span className="name">Буль</span>
+          <span className="name">You</span>
         </div>
         <div className="message">{props.message.data}</div>
       </li>
@@ -27,7 +28,7 @@ const messageBox = props => {
     messageElement = (
       <li className="friend-with-a-SVAGina">
         <div className="head">
-          <span className="name">Юния</span>
+          <span className="name">{props.currentUserChat.name}</span>
           <span className="time">{dateFormatter(props.message.date)}</span>
         </div>
         <div className="message">{props.message.data}</div>
@@ -38,4 +39,10 @@ const messageBox = props => {
   return <React.Fragment>{messageElement}</React.Fragment>;
 };
 
-export default messageBox;
+const mapStateToProps = state => {
+  return {
+    currentUserChat: state.chat.currentUserChat
+  }
+}
+
+export default connect(mapStateToProps, null)(messageBox);

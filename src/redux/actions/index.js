@@ -1,2 +1,9 @@
-export { getUsersList } from "./chat";
-export { userLogout } from "./user";
+export {
+  getUsersList,
+  getOnlineUsersList,
+  refreshUsersLists,
+  getMessages,
+  setCurrentUserChat,
+  userDisconnect
+} from "./chat";
+export { userLogout, userLogin } from "./user";

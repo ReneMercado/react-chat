@@ -1,29 +1,35 @@
-import React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import store from './redux/createStore';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { connect } from "react-redux";
+import "./App.css";
 
-import CreateUser from './components/login/CreateUser';
-import Auth from './components/login/Auth';
-import ChatLayout from './components/chat/layout/chatLayout';
-import Login from './components/login/Login';
+import CreateUser from "./components/login/CreateUser";
+import ChatLayout from "./components/chat/layout/chatLayout";
+import Login from "./components/login/Login";
 
-function App() {
+function App(props) {
   return (
-    <Provider store={store}>
-      <div className="App">
-        <Router>
-          <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/create-user" component={CreateUser} />
-            <Route path="/chatBase" component={ChatLayout} />
-            <Route path="/" exact component={Login} />
-          </Switch>
-        </Router>
-      </div>
-    </Provider>
+    <div className="App">
+      <span> logged as: {props.loggedAs}</span>
+      <Router>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/create-user" component={CreateUser} />
+          <Route path="/chatBase" component={ChatLayout} />
+          <Route path="/" exact component={Login} />
+        </Switch>
+      </Router>
+    </div>
   );
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    loggedAs: state.user.userDisplayName
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(App);
