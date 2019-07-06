@@ -6,9 +6,8 @@ import './App.css';
 
 import CreateUser from './components/login/CreateUser';
 import Auth from './components/login/Auth';
-import UserList from './components/userList';
-import Chat from './components/chat';
 import ChatLayout from './components/chat/layout/chatLayout';
+import Login from './components/login/Login';
 
 function App() {
   return (
@@ -16,12 +15,10 @@ function App() {
       <div className="App">
         <Router>
           <Switch>
-            <Route path="/login" component={Auth} />
+            <Route path="/login" component={Login} />
             <Route path="/create-user" component={CreateUser} />
             <Route path="/chatBase" component={ChatLayout} />
-            {/* <Route path="/users-list" component={UserList} />
-            <Route path="/chat/:id" component={Chat} /> */}
-            <Route path="/" exact component={Auth} />
+            <Route path="/" exact component={Login} />
           </Switch>
         </Router>
       </div>

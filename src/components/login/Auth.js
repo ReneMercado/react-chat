@@ -23,8 +23,8 @@ class Auth extends Component {
       .then(res => {
         console.log(res);
 
-        localStorage.setItem("token", res.data.token);
-        this.props.history.push('/users-list');
+        localStorage.setItem("token", (res.data.token).toString());
+        this.props.history.push('/chatBase');
       })
       .catch(err => {
         console.log(err);

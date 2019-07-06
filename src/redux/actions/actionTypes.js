@@ -1,0 +1,4 @@
+export const SET_USERS_LIST = 'SAVE_USERS_LIST';
+export const FETCH_USERS_LIST_FAILS = 'FETCH_USERS_LIST_FAILS';
+
+export const USER_LOGOUT = 'USER_LOGOUT';

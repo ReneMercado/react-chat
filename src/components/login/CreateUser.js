@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import AxiosClient from "../../axiosClient";
+import "./login.css";
 import axios from "axios";
 
 class CreateUser extends Component {
@@ -38,39 +39,46 @@ class CreateUser extends Component {
 
   render() {
     return (
-      <form>
-        <input
-          type="text"
-          placeholder="Nombre"
-          onChange={e => {
-            this.onChange(e, "name");
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Nombre de usuario"
-          onChange={e => {
-            this.onChange(e, "username");
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Email"
-          onChange={e => {
-            this.onChange(e, "email");
-          }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={e => {
-            this.onChange(e, "password");
-          }}
-        />
-
-        <button onClick={this.onCreateUser}>Crear Usuario</button>
-        <button onClick={this.navigateLogin}>Login</button>
-      </form>
+      <React.Fragment>
+        <div className="login-page">
+          <div className="form">
+            <form className="register-form">
+              <input
+                type="text"
+                placeholder="Nombre"
+                onChange={e => {
+                  this.onChange(e, "name");
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Nombre de usuario"
+                onChange={e => {
+                  this.onChange(e, "username");
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Email"
+                onChange={e => {
+                  this.onChange(e, "email");
+                }}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                onChange={e => {
+                  this.onChange(e, "password");
+                }}
+              />
+              <button onClick={this.onCreateUser}>create</button>
+              <p className="message">
+                Already registered? <a onClick={this.navigateLogin}>Sign In</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </React.Fragment>
     );
   }
 }

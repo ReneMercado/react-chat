@@ -13,7 +13,7 @@ const messageBox = props => {
   };
 
   let messageElement = null;
-  if (props.message.from === "1") {
+  if (props.message.from === localStorage.getItem("userId")) {
     messageElement = (
       <li className="i">
         <div className="head">
