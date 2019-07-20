@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "./login.css";
-import axios from "axios";
 import { connect } from "react-redux";
 import * as actions from "../../redux/actions/index";
 
@@ -10,29 +9,22 @@ class Login extends Component {
     password: ""
   };
 
-  onChange(event, prop) {
-    let newState = {
-      ...this.state
-    };
-    newState[prop] = event.target.value;
-
-    this.setState(newState);
-  }
+  onChange = event => {
+    //Cant access event inside setstate async function, the solution could be using event.persist()
+    //or get values reference before doing steState
+    //event.persist();
+    const { name, value } = event.target;
+    this.setState(state => {
+      return { [name]: value };
+    });
+  };
 
   login = e => {
     e.preventDefault();
-    axios
-      .post("https://chatbox-node.herokuapp.com/api/auth/token", this.state)
-      .then(res => {
-        console.log(res);
-
-        sessionStorage.setItem("token", res.data.token.toString());
-        this.props.onLogin(this.state.login);
-        this.props.history.push("/chatBase");
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    this.props.onLogin({
+      login: this.state.login,
+      password: this.state.password
+    });
   };
 
   onCreateAccount = () => {
@@ -40,24 +32,26 @@ class Login extends Component {
   };
 
   render() {
+    if (this.props.isLogged) {
+      this.props.history.push("/chatBase");
+    }
+
     return (
       <React.Fragment>
         <div className="login-page">
           <div className="form">
             <form className="login-form">
               <input
+                name="login"
                 type="text"
                 placeholder="username"
-                onChange={e => {
-                  this.onChange(e, "login");
-                }}
+                onChange={this.onChange}
               />
               <input
+                name="password"
                 type="password"
                 placeholder="password"
-                onChange={e => {
-                  this.onChange(e, "password");
-                }}
+                onChange={this.onChange}
               />
               <button onClick={this.login}>login</button>
               <p className="message">
@@ -72,12 +66,18 @@ class Login extends Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    isLogged: state.user.isLogged
+  };
+};
+
 const mapDispatchToProps = dispatch => {
   return {
-    onLogin: (userDisplayName) => dispatch(actions.userLogin(userDisplayName))
+    onLogin: loginObj => dispatch(actions.onLogin(loginObj))
   };
 };
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Login);

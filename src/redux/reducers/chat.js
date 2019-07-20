@@ -31,7 +31,6 @@ const reducerChat = (state = initialState, action) => {
         messages: action.messages
       };
     case actionTypes.USER_DISCONNECT:
-      sessionStorage.removeItem("userId");
       return {
         ...state,
         usersList: [],

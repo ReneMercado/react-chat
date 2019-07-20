@@ -9,3 +9,5 @@ export const SET_CURRENT_USERCHAT = 'SET_CURRENT_USERCHAT';
 export const USER_LOGOUT = 'USER_LOGOUT';
 export const USER_LOGIN = 'USER_LOGIN';
 export const USER_DISCONNECT = 'USER_DISCONNECT';
+
+export const SET_USER_ID = 'SET_USER_ID';

@@ -76,7 +76,6 @@ export const fetchConnectedUsersListFails = () => {
 export const getOnlineUsersList = () => {
   return dispatch => {
     const instance = AxiosClient();
-    //Validate if user is connected to chat.
     if (sessionStorage.getItem("userId")) {
       instance
         .get("/api/chats/connected")
@@ -128,7 +127,22 @@ export const getMessages = () => {
 };
 
 export const userDisconnect = () => {
+  sessionStorage.removeItem("userId");
   return {
     type: actionTypes.USER_DISCONNECT
+  };
+};
+
+export const onSendMessage = (messageObj, setTextMessageBox) => {
+  return dispatch => {
+    const instance = AxiosClient();
+
+    instance
+      .post("/api/chats/message", messageObj)
+      .then(res => {
+        setTextMessageBox("");
+        dispatch(getMessages());
+      })
+      .catch(err => console.log(err));
   };
 };

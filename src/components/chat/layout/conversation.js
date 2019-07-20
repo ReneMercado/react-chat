@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import MessageBox from "../messageBox/messageBox";
-import AxiosClient from "../../../axiosClient";
 import nicescroll from "nicescroll";
 import * as actions from "../../../redux/actions/index";
 import { connect } from "react-redux";
@@ -9,7 +8,6 @@ import { scrollToLastMessage } from "../../../utility";
 
 const Conversation = props => {
   const [message, setMessage] = useState("");
-  const instance = AxiosClient();
 
   useEffect(() => {
     window.jQuery(".messages").niceScroll({
@@ -17,7 +15,6 @@ const Conversation = props => {
       cursorwidth: "4px",
       cursorborder: "none"
     });
-
   }, []);
 
   useEffect(() => {
@@ -41,17 +38,13 @@ const Conversation = props => {
   };
 
   const onSendMessage = () => {
-    instance
-      .post("/api/chats/message", {
+    props.onSendMessage(
+      {
         to: props.currentUserChat._id,
         data: message
-      })
-      .then(res => {
-        document.getElementById("texxt").value = "";
-        setMessage("");
-        props.onFetchConversation();
-      })
-      .catch(err => console.log(err));
+      },
+      setMessage
+    );
   };
 
   return (
@@ -82,10 +75,9 @@ const Conversation = props => {
           name="e"
           id="texxt"
           rows="2"
+          value={message}
           onChange={onChangeMessage}
         />
-        {/* <i className="fa fa-picture-o" />
-        <i className="fa fa-file-o" /> */}
         <span className="send" onClick={onSendMessage}>
           Send
         </span>
@@ -103,7 +95,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onFetchConversation: () => dispatch(actions.getMessages())
+    onFetchConversation: () => dispatch(actions.getMessages()),
+    onSendMessage: (messageObj, setTextMessageBox) =>
+      dispatch(actions.onSendMessage(messageObj, setTextMessageBox))
   };
 };
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import AxiosClient from "../../axiosClient";
 import "./login.css";
-import axios from "axios";
+import { connect } from "react-redux";
+import * as actions from "../..//redux/actions/index";
 
 class CreateUser extends Component {
   state = {
@@ -11,14 +11,12 @@ class CreateUser extends Component {
     password: ""
   };
 
-  onChange(event, prop) {
-    let newState = {
-      ...this.state
-    };
-    newState[prop] = event.target.value;
-
-    this.setState(newState);
-  }
+  onChange = event => {
+    const { name, value } = event.target;
+    this.setState(state => {
+      return { [name]: value };
+    });
+  };
 
   navigateLogin = () => {
     this.props.history.push("/login");
@@ -26,15 +24,12 @@ class CreateUser extends Component {
 
   onCreateUser = event => {
     event.preventDefault();
-    axios
-      .post("https://chatbox-node.herokuapp.com/api/users", this.state)
-      .then(res => {
-        this.props.history.push("/login");
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    this.props.onCreateUser({
+      name: this.state.name,
+      username: this.state.username,
+      email: this.state.email,
+      password: this.state.password
+    });
   };
 
   render() {
@@ -44,32 +39,28 @@ class CreateUser extends Component {
           <div className="form">
             <form className="register-form">
               <input
+                name="name"
                 type="text"
                 placeholder="Nombre"
-                onChange={e => {
-                  this.onChange(e, "name");
-                }}
+                onChange={this.onChange}
               />
               <input
+                name="username"
                 type="text"
                 placeholder="Nombre de usuario"
-                onChange={e => {
-                  this.onChange(e, "username");
-                }}
+                onChange={this.onChange}
               />
               <input
+                name="email"
                 type="text"
                 placeholder="Email"
-                onChange={e => {
-                  this.onChange(e, "email");
-                }}
+                onChange={this.onChange}
               />
               <input
+                name="password"
                 type="password"
                 placeholder="Password"
-                onChange={e => {
-                  this.onChange(e, "password");
-                }}
+                onChange={this.onChange}
               />
               <button onClick={this.onCreateUser}>create</button>
               <p className="message">
@@ -83,4 +74,13 @@ class CreateUser extends Component {
   }
 }
 
-export default CreateUser;
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    onCreateUser: userObj => dispatch(actions.onCreateUser(userObj, ownProps))
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(CreateUser);

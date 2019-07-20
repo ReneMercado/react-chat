@@ -14,7 +14,7 @@ const messageBox = props => {
   };
 
   let messageElement = null;
-  if (props.message.from === sessionStorage.getItem("userId")) {
+  if (props.message.from === props.userId) {
     messageElement = (
       <li className="i">
         <div className="head">
@@ -41,7 +41,8 @@ const messageBox = props => {
 
 const mapStateToProps = state => {
   return {
-    currentUserChat: state.chat.currentUserChat
+    currentUserChat: state.chat.currentUserChat,
+    userId: state.user.userId
   }
 }
 
