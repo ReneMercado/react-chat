@@ -1,5 +1,6 @@
 import * as actionTypes from "./actionTypes";
 import AxiosClient from "../../axiosClient";
+import { setUserId } from "./user";
 
 export const setUsersList = users => {
   return {
@@ -125,10 +126,17 @@ export const getMessages = () => {
   };
 };
 
-export const userDisconnect = () => {
+export const clearUserChatSession = () => {
   sessionStorage.removeItem("userId");
   return {
     type: actionTypes.USER_DISCONNECT
+  };
+};
+
+export const userDisconnect = () => {
+  return dispatch => {
+    dispatch(clearUserChatSession());
+    dispatch(setUserId());
   };
 };
 
