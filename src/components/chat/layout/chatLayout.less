@@ -1,0 +1,27 @@
+@cof: 1;
+
+.chat-layout {
+  margin: 10px auto;
+  width: 880px * @cof;
+  height: 555px * @cof;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 25px darken(#61b2d0, 10);
+  flex-direction: row;
+  display: flex;
+  overflow: hidden;
+
+  .chat-layout__left-menu {
+    width: 29%;
+    box-sizing: content-box;
+    padding-right: 1%;
+    height: 100%;
+    background: #434753;
+  }
+
+  .chat-layout__chat {
+    width: 70%;
+    height: 100%;
+    background: #f1f5f8;
+  }
+}

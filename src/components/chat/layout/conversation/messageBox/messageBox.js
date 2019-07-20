@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from 'react-redux';
+import "./messageBox.less";
 
 const messageBox = props => {
   const dateFormatter = date => {
@@ -16,22 +17,22 @@ const messageBox = props => {
   let messageElement = null;
   if (props.message.from === props.userId) {
     messageElement = (
-      <li className="i">
-        <div className="head">
-          <span className="time">{dateFormatter(props.message.date)}</span>
-          <span className="name">You</span>
+      <li className="message-box-me">
+        <div className="message-box-me__head">
+          <span className="message-box-me__time">{dateFormatter(props.message.date)}</span>
+          <span className="message-box-me__name">You</span>
         </div>
-        <div className="message">{props.message.data}</div>
+        <div className="message-box-me__message">{props.message.data}</div>
       </li>
     );
   } else {
     messageElement = (
-      <li className="friend-with-a-SVAGina">
-        <div className="head">
-          <span className="name">{props.currentUserChat.name}</span>
-          <span className="time">{dateFormatter(props.message.date)}</span>
+      <li className="message-box-friend">
+        <div className="message-box-friend__head">
+          <span className="message-box-friend__name">{props.currentUserChat.name}</span>
+          <span className="message-box-friend__time">{dateFormatter(props.message.date)}</span>
         </div>
-        <div className="message">{props.message.data}</div>
+        <div className="message-box-friend__message">{props.message.data}</div>
       </li>
     );
   }

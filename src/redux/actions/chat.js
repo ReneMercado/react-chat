@@ -1,5 +1,4 @@
 import * as actionTypes from "./actionTypes";
-import Axios from "axios";
 import AxiosClient from "../../axiosClient";
 
 export const setUsersList = users => {

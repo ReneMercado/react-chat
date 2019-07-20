@@ -3,8 +3,6 @@ import Axios from "axios";
 import AxiosClient from "../../axiosClient";
 import { refreshUsersLists } from "./chat"
 
-const instance = AxiosClient();
-
 export const userLogout = () => {
   sessionStorage.removeItem("token");
   sessionStorage.removeItem("userId");

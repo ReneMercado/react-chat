@@ -1,0 +1,47 @@
+.side-chat-user__image {
+  margin: 5px;
+  border-radius: 50%;
+  border: 3px solid #696c75;
+  height: 50px;
+  width: 50px;
+}
+
+.side-chat-user {
+  display: flex;
+  margin: 0 0 10px 10px;
+  user-select: none;
+}
+
+.side-chat-user__info {
+  flex: 1;
+}
+
+.side-chat-user__info__user {
+  color: #fff;
+  margin-top: 12px;
+}
+
+.side-chat-user__info__status {
+  position: relative;
+  margin-left: 14px;
+  color: #a8adb3;
+}
+
+.side-chat-user__info__status--off:after,
+.side-chat-user__info__status--on:after {
+  content: "";
+  left: -12px;
+  top: 8px;
+  position: absolute;
+  height: 7px;
+  width: 7px;
+  border-radius: 50%;
+}
+
+.side-chat-user__info__status--off:after {
+  background: #fd8064;
+}
+
+.side-chat-user__info__status--on:after {
+  background: #62bf6e;
+}
